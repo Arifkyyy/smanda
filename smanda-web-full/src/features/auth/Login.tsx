@@ -25,17 +25,17 @@ export default function Login() {
       {/* Left panel: school image area (replace source with your school photo later) */}
       <div className="relative hidden lg:flex overflow-hidden">
         <img src={schoolImage} alt="Foto lingkungan sekolah" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-800/90 via-sky-700/80 to-blue-600/85" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(125,211,252,0.28),transparent_48%),radial-gradient(circle_at_85%_80%,rgba(34,211,238,0.24),transparent_52%)]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-800/90 via-purple-700/80 to-slate-950/85" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(196,181,253,0.28),transparent_48%),radial-gradient(circle_at_85%_80%,rgba(168,85,247,0.24),transparent_52%)]" />
 
         <div className="relative z-10 flex h-full w-full flex-col justify-between p-12 text-white">
           <Brand light />
           <div>
-            <p className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-[0.18em] text-cyan-100">PORTAL AKADEMIK SISWA</p>
+            <p className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-[0.18em] text-violet-100">PORTAL AKADEMIK SISWA</p>
             <h1 className="mt-5 text-5xl font-extrabold leading-tight">
               Bimbingan Konseling
               <br />
-              <span className="text-cyan-300">SMAN 2 Cianjur</span>
+              <span className="text-violet-300">SMAN 2 Cianjur</span>
             </h1>
             <p className="mt-5 max-w-md text-sm text-cyan-50/85">
               Area kiri ini disiapkan untuk foto sekolah. Ganti sumber gambar pada variabel
@@ -58,7 +58,7 @@ export default function Login() {
 
           <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl mb-6">
             {(['siswa', 'admin'] as Role[]).map((r) => (
-              <button key={r} onClick={() => setRole(r)} className={`py-2 rounded-lg text-sm font-semibold capitalize transition-all ${role === r ? 'bg-white text-sky-700 shadow-sm' : 'text-slate-500'}`}>
+              <button key={r} onClick={() => setRole(r)} className={`py-2 rounded-lg text-sm font-semibold capitalize transition-all ${role === r ? 'bg-white text-violet-700 shadow-sm' : 'text-slate-500'}`}>
                 {r}
               </button>
             ))}
@@ -71,13 +71,13 @@ export default function Login() {
               value={id}
               onChange={(e) => setId(e.target.value)}
               placeholder="email@example.com atau nama"
-              className="w-full rounded-xl border border-slate-300 bg-slate-50 py-3 pl-11 pr-4 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+              className="w-full rounded-xl border border-slate-300 bg-slate-50 py-3 pl-11 pr-4 text-sm text-slate-700 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
             />
           </div>
 
           <div className="mb-2 flex items-center justify-between">
             <label className="text-sm font-semibold text-slate-700">Kata Sandi</label>
-            <a className="cursor-pointer text-xs text-sky-700 hover:underline">Lupa Password?</a>
+            <a className="cursor-pointer text-xs text-violet-700 hover:underline">Lupa Password?</a>
           </div>
           <div className="relative mb-7">
             <Lock size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -86,7 +86,7 @@ export default function Login() {
               value={pw}
               onChange={(e) => setPw(e.target.value)}
               placeholder="••••••••"
-              className="w-full rounded-xl border border-slate-300 bg-slate-50 py-3 pl-11 pr-12 text-sm text-slate-700 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+              className="w-full rounded-xl border border-slate-300 bg-slate-50 py-3 pl-11 pr-12 text-sm text-slate-700 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
             />
             <button onClick={() => setShow((s) => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600" aria-label={show ? 'Sembunyikan password' : 'Tampilkan password'}>
               {show ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -95,7 +95,7 @@ export default function Login() {
 
           <button
             onClick={handleSubmit}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-700 to-cyan-600 py-3 text-base font-bold text-white shadow-lg shadow-sky-700/25 transition-all hover:-translate-y-0.5 hover:shadow-sky-700/35 active:translate-y-0"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-700 to-purple-600 py-3 text-base font-bold text-white shadow-lg shadow-violet-700/25 transition-all hover:-translate-y-0.5 hover:shadow-violet-700/35 active:translate-y-0"
           >
             <ArrowRight size={18} />
             Masuk sebagai {role === 'siswa' ? 'Siswa' : 'Admin'}
