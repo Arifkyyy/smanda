@@ -33,7 +33,7 @@ export default function Login() {
           <div>
             <p className="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold tracking-[0.18em] text-cyan-100">PORTAL AKADEMIK SISWA</p>
             <h1 className="mt-5 text-5xl font-extrabold leading-tight">
-              Badan Konseling
+              Bimbingan Konseling
               <br />
               <span className="text-cyan-300">SMAN 2 Cianjur</span>
             </h1>

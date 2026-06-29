@@ -19,7 +19,7 @@ export default function Brand({ size = "md", light = false }: BrandProps) {
           SMAN 2 Cianjur
         </p>
         <p className={`text-xs ${light ? "text-purple-100" : "text-slate-400"}`}>
-          Badan konseling
+          Bimbingan Konseling
         </p>
       </div>
     </div>
