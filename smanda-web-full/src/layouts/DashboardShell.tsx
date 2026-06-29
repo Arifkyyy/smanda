@@ -50,9 +50,7 @@ export default function DashboardShell({ role }: { role: Role }) {
   return (
     <div className="min-h-screen bg-slate-50">
       <aside
-        className={`fixed inset-y-0 left-0 z-40 bg-gradient-to-b from-violet-700 via-purple-800 to-slate-950 border-r border-violet-100/10 shadow-2xl flex flex-col overflow-hidden transition-[width] duration-300 ${
-          open ? 'w-72' : 'w-20'
-        }`}
+        className={`fixed inset-y-0 left-0 z-40 bg-gradient-to-b from-violet-700 via-purple-800 to-slate-950 border-r border-violet-100/10 shadow-2xl flex flex-col overflow-hidden transition-[width] duration-300 ${open ? 'w-72' : 'w-20'}`}
       >
         <div className={`px-5 py-5 border-b border-white/10 flex items-center ${open ? 'justify-between' : 'justify-center'}`}>
           <div className={open ? 'block' : 'hidden'}>
