@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
-import { CalendarDays, Mail, Phone, Save, UserRound } from 'lucide-react';
+import { BookOpen, Mail, Phone, Save, UserRound } from 'lucide-react';
 import { Card } from '../../components/ui';
 import { useStudents } from '../../hooks/useStudents';
+
+const statusOptions = ['bersama', 'bercerai', 'wafat'] as const;
+const levelOptions = ['10', '11', '12'] as const;
+const classOptions = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'] as const;
+const semesterOptions = ['1', '2'] as const;
 
 export default function ProfilSiswa() {
   const { currentStudent, updateCurrentStudent } = useStudents();
@@ -10,11 +15,16 @@ export default function ProfilSiswa() {
     nama: '',
     nisn: '',
     email: '',
-    kelas: '',
+    tingkatKelas: '10',
+    rombel: 'A',
+    semester: '1',
     namaAyah: '',
     namaIbu: '',
-    pekerjaan: '',
-    gaji: '',
+    pekerjaanAyah: '',
+    pekerjaanIbu: '',
+    gajiAyah: '',
+    gajiIbu: '',
+    status: 'bersama',
     noHp: '',
   });
 
@@ -23,11 +33,16 @@ export default function ProfilSiswa() {
       nama: currentStudent.nama,
       nisn: currentStudent.nisn,
       email: currentStudent.email,
-      kelas: currentStudent.kelas,
+      tingkatKelas: currentStudent.tingkatKelas ?? '10',
+      rombel: currentStudent.rombel ?? currentStudent.kelasSiswa ?? 'A',
+      semester: currentStudent.semester ?? '1',
       namaAyah: currentStudent.orangTua.namaAyah,
       namaIbu: currentStudent.orangTua.namaIbu,
-      pekerjaan: currentStudent.orangTua.pekerjaan,
-      gaji: String(currentStudent.orangTua.gaji),
+      pekerjaanAyah: currentStudent.orangTua.pekerjaanAyah ?? currentStudent.orangTua.pekerjaan,
+      pekerjaanIbu: currentStudent.orangTua.pekerjaanIbu ?? '',
+      gajiAyah: String(currentStudent.orangTua.gajiAyah ?? currentStudent.orangTua.gaji),
+      gajiIbu: String(currentStudent.orangTua.gajiIbu ?? 0),
+      status: currentStudent.orangTua.status ?? 'bersama',
       noHp: currentStudent.orangTua.noHp,
     });
   }, [currentStudent]);
@@ -43,14 +58,19 @@ export default function ProfilSiswa() {
     { label: 'Nama Lengkap', value: currentStudent.nama, icon: UserRound },
     { label: 'NISN', value: currentStudent.nisn, icon: UserRound },
     { label: 'Email', value: currentStudent.email, icon: Mail },
-    { label: 'Kelas', value: currentStudent.kelas, icon: CalendarDays },
+    { label: 'Tingkat Kelas', value: currentStudent.tingkatKelas ?? '10', icon: BookOpen },
+    { label: 'Rombel', value: currentStudent.rombel ?? currentStudent.kelasSiswa ?? 'A', icon: BookOpen },
+    { label: 'Semester', value: currentStudent.semester ?? '1', icon: BookOpen },
   ];
 
   const parentSummary = [
     { label: 'Nama Ayah', value: currentStudent.orangTua.namaAyah },
     { label: 'Nama Ibu', value: currentStudent.orangTua.namaIbu },
-    { label: 'Pekerjaan', value: currentStudent.orangTua.pekerjaan },
-    { label: 'Penghasilan', value: `Rp ${currentStudent.orangTua.gaji.toLocaleString('id-ID')} / bulan` },
+    { label: 'Pekerjaan Ayah', value: currentStudent.orangTua.pekerjaanAyah ?? currentStudent.orangTua.pekerjaan },
+    { label: 'Pekerjaan Ibu', value: currentStudent.orangTua.pekerjaanIbu ?? '-' },
+    { label: 'Gaji Ayah', value: `Rp ${(currentStudent.orangTua.gajiAyah ?? currentStudent.orangTua.gaji).toLocaleString('id-ID')} / bulan` },
+    { label: 'Gaji Ibu', value: `Rp ${(currentStudent.orangTua.gajiIbu ?? 0).toLocaleString('id-ID')} / bulan` },
+    { label: 'Status Orang Tua', value: currentStudent.orangTua.status ?? 'bersama' },
     { label: 'No. HP Orang Tua', value: currentStudent.orangTua.noHp, icon: Phone },
   ];
 
@@ -66,12 +86,20 @@ export default function ProfilSiswa() {
       nama: form.nama,
       nisn: form.nisn,
       email: form.email,
-      kelas: form.kelas,
+      tingkatKelas: form.tingkatKelas,
+      rombel: form.rombel,
+      kelasSiswa: form.rombel,
+      semester: form.semester,
       orangTua: {
         namaAyah: form.namaAyah,
         namaIbu: form.namaIbu,
-        pekerjaan: form.pekerjaan,
-        gaji: Number(form.gaji) || 0,
+        pekerjaan: form.pekerjaanAyah,
+        gaji: Number(form.gajiAyah) || 0,
+        pekerjaanAyah: form.pekerjaanAyah,
+        pekerjaanIbu: form.pekerjaanIbu,
+        gajiAyah: Number(form.gajiAyah) || 0,
+        gajiIbu: Number(form.gajiIbu) || 0,
+        status: form.status,
         noHp: form.noHp,
       },
     });
@@ -112,7 +140,10 @@ export default function ProfilSiswa() {
 
             <div className="mt-5 flex flex-wrap justify-center gap-2">
               <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600 ring-1 ring-emerald-200">Aktif</span>
-              <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-600 ring-1 ring-violet-200">{currentStudent.kelas}</span>
+              <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-600 ring-1 ring-violet-200">
+                Kelas {currentStudent.tingkatKelas ?? '10'}
+                {currentStudent.rombel ?? currentStudent.kelasSiswa ?? 'A'} • Semester {currentStudent.semester ?? '1'}
+              </span>
               <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-600 ring-1 ring-sky-200">Siswa</span>
             </div>
 
@@ -123,8 +154,16 @@ export default function ProfilSiswa() {
                   <span className="font-semibold text-emerald-600">Aktif</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Kelas</span>
-                  <span className="font-semibold text-violet-600">{currentStudent.kelas}</span>
+                  <span className="text-slate-500">Tingkat Kelas</span>
+                  <span className="font-semibold text-violet-600">{currentStudent.tingkatKelas ?? '10'}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">Rombel</span>
+                  <span className="font-semibold text-violet-600">{currentStudent.rombel ?? currentStudent.kelasSiswa ?? 'A'}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">Semester</span>
+                  <span className="font-semibold text-violet-600">{currentStudent.semester ?? '1'}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-500">Sinkron Admin</span>
@@ -149,7 +188,44 @@ export default function ProfilSiswa() {
               {renderInput('Nama Lengkap', 'nama', <UserRound size={16} />, form.nama)}
               {renderInput('NISN', 'nisn', <UserRound size={16} />, form.nisn)}
               {renderInput('Email', 'email', <Mail size={16} />, form.email)}
-              {renderInput('Kelas', 'kelas', <CalendarDays size={16} />, form.kelas)}
+              <label className="block md:col-span-2">
+                <span className="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-500">Kelas Siswa</span>
+                <div className="grid gap-3 md:grid-cols-3">
+                  <select
+                    value={form.tingkatKelas}
+                    onChange={(e) => handleChange('tingkatKelas', e.target.value)}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/15"
+                  >
+                    {levelOptions.map((option) => (
+                      <option key={option} value={option}>
+                        Kelas {option}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={form.rombel}
+                    onChange={(e) => handleChange('rombel', e.target.value)}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/15"
+                  >
+                    {classOptions.map((option) => (
+                      <option key={option} value={option}>
+                        Rombel {option}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={form.semester}
+                    onChange={(e) => handleChange('semester', e.target.value)}
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/15"
+                  >
+                    {semesterOptions.map((option) => (
+                      <option key={option} value={option}>
+                        Semester {option}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </label>
             </div>
 
             <div className="mt-8 border-t border-slate-100 pt-6">
@@ -161,8 +237,25 @@ export default function ProfilSiswa() {
               <div className="grid gap-4 md:grid-cols-2">
                 {renderInput('Nama Ayah', 'namaAyah', <UserRound size={16} />, form.namaAyah)}
                 {renderInput('Nama Ibu', 'namaIbu', <UserRound size={16} />, form.namaIbu)}
-                {renderInput('Pekerjaan', 'pekerjaan', <UserRound size={16} />, form.pekerjaan)}
-                {renderInput('Penghasilan', 'gaji', <UserRound size={16} />, form.gaji)}
+                {renderInput('Pekerjaan Ayah', 'pekerjaanAyah', <UserRound size={16} />, form.pekerjaanAyah)}
+                {renderInput('Pekerjaan Ibu', 'pekerjaanIbu', <UserRound size={16} />, form.pekerjaanIbu)}
+                {renderInput('Gaji Ayah', 'gajiAyah', <UserRound size={16} />, form.gajiAyah)}
+                {renderInput('Gaji Ibu', 'gajiIbu', <UserRound size={16} />, form.gajiIbu)}
+                <label className="block">
+                  <span className="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-500">Status Orang Tua</span>
+                  <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-500/15">
+                    <span className="shrink-0 text-slate-400">
+                      <UserRound size={16} />
+                    </span>
+                    <select value={form.status} onChange={(e) => handleChange('status', e.target.value)} className="w-full bg-transparent text-sm font-semibold text-slate-700 outline-none">
+                      {statusOptions.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </label>
                 {renderInput('No. HP Orang Tua', 'noHp', <Phone size={16} />, form.noHp)}
               </div>
             </div>
