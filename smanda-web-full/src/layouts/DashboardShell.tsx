@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, User, ClipboardList, CalendarHeart, Users, FileCheck2, LogOut, Menu, X, ChevronRight, ChevronLeft, type LucideIcon } from 'lucide-react';
 import type { Role } from '../types';
@@ -32,6 +32,8 @@ export default function DashboardShell({ role }: { role: Role }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const nav = role === 'siswa' ? siswaNav : adminNav;
+  const sidebarWidth = desktopOpen ? '18rem' : '5rem';
+  const shellStyle = { '--sidebar-width': sidebarWidth } as CSSProperties;
 
   const handleLogout = () => {
     logout();
@@ -78,15 +80,6 @@ export default function DashboardShell({ role }: { role: Role }) {
       </nav>
 
       <div className={`border-t border-white/10 ${isCompact ? 'p-2' : 'p-3'}`}>
-        {!isCompact && (
-          <button
-            onClick={() => setDesktopOpen((value) => !value)}
-            className="mx-auto mb-3 h-10 w-10 rounded-full bg-violet-700/80 text-white shadow-lg flex items-center justify-center border border-white/10 hover:bg-violet-600 transition"
-            aria-label={desktopOpen ? 'Sembunyikan sidebar' : 'Buka sidebar'}
-          >
-            {desktopOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-          </button>
-        )}
         <button
           onClick={handleLogout}
           className={`${isCompact ? 'mx-auto w-12 h-12 rounded-2xl justify-center' : 'w-full px-4 py-2.5 rounded-xl justify-start'} flex items-center text-sm font-medium text-violet-100/80 hover:bg-white/10 hover:text-white transition`}
@@ -100,17 +93,17 @@ export default function DashboardShell({ role }: { role: Role }) {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <aside
-        className={`hidden lg:flex fixed inset-y-0 left-0 z-40 bg-gradient-to-b from-violet-700 via-purple-800 to-slate-950 border-r border-violet-100/10 shadow-2xl flex-col overflow-hidden transition-[width] duration-300 ${desktopOpen ? 'w-72' : 'w-20'}`}
-      >
-        <div className={`px-5 py-5 border-b border-white/10 flex items-center ${desktopOpen ? 'justify-between' : 'justify-center'}`}>
-          <div className={desktopOpen ? 'block' : 'hidden'}>
-            <Brand size="sm" light />
-          </div>
-          <div className={desktopOpen ? 'hidden' : 'block'}>
-            <img src="/logo-smanda.png" alt="Logo SMAN 2 Cianjur" className="h-10 w-10 object-contain" />
-          </div>
+    <div className="min-h-screen bg-slate-50" style={shellStyle}>
+      <aside className="hidden lg:flex fixed inset-y-0 left-0 z-40 bg-gradient-to-b from-violet-700 via-purple-800 to-slate-950 border-r border-violet-100/10 shadow-2xl flex-col overflow-hidden transition-[width] duration-300 w-[var(--sidebar-width)]">
+        <div className="px-4 py-5 border-b border-white/10 flex items-center justify-between gap-3">
+          <div className="min-w-0 overflow-hidden">{desktopOpen ? <Brand size="sm" light /> : <img src="/logo-smanda.png" alt="Logo SMAN 2 Cianjur" className="h-10 w-10 object-contain" />}</div>
+          <button
+            onClick={() => setDesktopOpen((value) => !value)}
+            className="h-10 w-10 rounded-full bg-white/10 text-white shadow-lg flex items-center justify-center border border-white/10 hover:bg-white/15 transition shrink-0"
+            aria-label={desktopOpen ? 'Sembunyikan sidebar' : 'Buka sidebar'}
+          >
+            {desktopOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+          </button>
         </div>
         {renderNav(!desktopOpen)}
       </aside>
@@ -137,8 +130,8 @@ export default function DashboardShell({ role }: { role: Role }) {
         {mobileOpen ? <X size={22} /> : <Menu size={22} />}
       </button>
 
-      <div className={`flex-1 flex flex-col min-w-0 transition-[padding] duration-300 lg:${desktopOpen ? 'pl-72' : 'pl-20'}`}>
-        <header className="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-slate-100 px-5 py-3.5 flex items-center gap-3">
+      <div className="flex-1 flex flex-col min-w-0 transition-[padding-left] duration-300 lg:pl-[var(--sidebar-width)]">
+        <header className="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-slate-100 px-4 sm:px-5 py-3.5 flex items-center gap-3">
           <div className="hidden lg:block w-10" />
           <div className="flex-1">
             <p className="text-sm text-slate-400">Selamat datang kembali,</p>
@@ -147,7 +140,7 @@ export default function DashboardShell({ role }: { role: Role }) {
           <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 text-white flex items-center justify-center font-semibold">{initials}</div>
         </header>
 
-        <main className="p-5 sm:p-8 flex-1">
+        <main className="p-4 sm:p-6 lg:p-8 flex-1 min-w-0 overflow-x-hidden">
           <Outlet />
         </main>
       </div>
