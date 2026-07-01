@@ -1,4 +1,4 @@
-export type Role = "siswa" | "admin";
+export type Role = 'siswa' | 'admin';
 
 export interface User {
   id: string;
@@ -12,6 +12,11 @@ export interface ParentInfo {
   namaIbu: string;
   pekerjaan: string;
   gaji: number;
+  pekerjaanAyah?: string;
+  pekerjaanIbu?: string;
+  gajiAyah?: number;
+  gajiIbu?: number;
+  status?: 'bersama' | 'bercerai' | 'wafat';
 }
 
 export interface StudentProfile {
@@ -28,15 +33,11 @@ export interface Grade {
   status: GradeStatus;
 }
 
-export type GradeStatus = "Menunggu" | "Tervalidasi";
+export type GradeStatus = 'Menunggu' | 'Tervalidasi';
 
-export type ServiceType =
-  | "Konseling Individual"
-  | "Konseling Kelompok"
-  | "Bimbingan Karir"
-  | "Layanan Krisis";
+export type ServiceType = 'Konseling Individual' | 'Konseling Kelompok' | 'Bimbingan Karir' | 'Layanan Krisis';
 
-export type KonsulStatus = "Menunggu" | "Disetujui" | "Ditolak";
+export type KonsulStatus = 'Menunggu' | 'Disetujui' | 'Ditolak';
 
 export interface Konsul {
   id: string;
@@ -54,7 +55,7 @@ export interface Geotag {
   lng: number;
 }
 
-export type AbsensiStatus = "Tepat Waktu" | "Terlambat";
+export type AbsensiStatus = 'Tepat Waktu' | 'Terlambat';
 
 export interface Absensi {
   id: string;
