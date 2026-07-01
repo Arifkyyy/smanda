@@ -38,8 +38,8 @@ export default function Login() {
               <span className="text-violet-300">SMAN 2 Cianjur</span>
             </h1>
             <p className="mt-5 max-w-md text-sm text-cyan-50/85">
-              Area kiri ini disiapkan untuk foto sekolah. Ganti sumber gambar pada variabel
-              <span className="font-semibold"> schoolImage</span> di file ini.
+              
+              <span className="font-semibold"> </span> 
             </p>
           </div>
           <p className="text-xs text-cyan-100/70">© 2026 SMA Negeri 2 Cianjur</p>
