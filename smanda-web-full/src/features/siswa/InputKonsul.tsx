@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
 import { BadgeCheck, CalendarDays, Clock3, Edit3, Send } from 'lucide-react';
-import { Card } from '../../components/ui';
+import { Card, StatusPill } from '../../components/ui';
 import { useStudents } from '../../hooks/useStudents';
 import { serviceTypes, bkTeachers } from '../../data/mock';
+import { getConsultStatusCounts, getConsultStatusLabel, loadConsultations, saveConsultations } from '../../data/consultationStore';
+import { type ConsultRow } from '../../data/mock';
 
 type PendingKonsul = {
   id: string;
@@ -39,9 +41,12 @@ export default function InputKonsul() {
   const [note, setNote] = useState('');
   const [tanggalPengajuan, setTanggalPengajuan] = useState(getTodayInputValue());
   const [pendingItems, setPendingItems] = useState<PendingKonsul[]>([]);
+  const [consultations, setConsultations] = useState<ConsultRow[]>(loadConsultations());
   const [done, setDone] = useState(false);
 
   const pendingCount = useMemo(() => pendingItems.filter((item) => item.status === 'Pending').length, [pendingItems]);
+  const studentConsultations = useMemo(() => consultations.filter((item) => item.studentId === currentStudent.id).sort((a, b) => b.tanggal.localeCompare(a.tanggal)), [consultations, currentStudent.id]);
+  const consultCounts = useMemo(() => getConsultStatusCounts(studentConsultations), [studentConsultations]);
 
   const submit = () => {
     if (!service || !teacher || !note.trim() || !tanggalPengajuan) return;
@@ -73,6 +78,24 @@ export default function InputKonsul() {
   };
 
   const sendFinal = (item: PendingKonsul) => {
+    const nextConsultation: ConsultRow = {
+      id: `${Date.now()}`,
+      studentId: currentStudent.id,
+      studentName: currentStudent.nama,
+      kelas: `Kelas ${currentStudent.tingkatKelas ?? '10'}${currentStudent.rombel ?? currentStudent.kelasSiswa ?? 'A'}`,
+      teacherId: `${item.teacher}`.replace(/\s+/g, '-').toLowerCase(),
+      teacherName: item.teacher,
+      service: item.service as ConsultRow['service'],
+      catatan: item.note,
+      status: 'Menunggu',
+      tanggal: new Date(`${item.tanggalPengajuan}T00:00:00`).toISOString(),
+    };
+
+    setConsultations((current) => {
+      const nextRows = [nextConsultation, ...current];
+      saveConsultations(nextRows);
+      return nextRows;
+    });
     setPendingItems((current) => current.map((entry) => (entry.id === item.id ? { ...entry, status: 'Dikirim' } : entry)));
     setDone(true);
     setTimeout(() => setDone(false), 2500);
@@ -212,6 +235,94 @@ export default function InputKonsul() {
                 ))}
               </div>
             )}
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <Card className="overflow-hidden">
+          <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+            <div>
+              <h2 className="text-base font-semibold text-slate-800">History Konsul</h2>
+              <p className="text-sm text-slate-400">Riwayat pengajuan yang sudah terkirim ke admin.</p>
+            </div>
+            <div className="h-8 w-8 rounded-full bg-sky-500 text-white flex items-center justify-center text-sm font-bold">{studentConsultations.length}</div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-100">
+              <thead className="bg-slate-50/80">
+                <tr className="text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="px-5 py-3">No</th>
+                  <th className="px-5 py-3">Layanan</th>
+                  <th className="px-5 py-3">Guru BK</th>
+                  <th className="px-5 py-3">Tanggal</th>
+                  <th className="px-5 py-3">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {studentConsultations.length === 0 ? (
+                  <tr>
+                    <td className="px-5 py-8 text-center text-sm text-slate-400" colSpan={5}>
+                      Belum ada history konsul.
+                    </td>
+                  </tr>
+                ) : (
+                  studentConsultations.map((item, index) => (
+                    <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
+                      <td className="px-5 py-4 text-sm font-medium text-slate-500">{index + 1}</td>
+                      <td className="px-5 py-4">
+                        <div className="font-semibold text-slate-800">{item.service}</div>
+                        <div className="text-xs text-slate-400">{item.catatan}</div>
+                      </td>
+                      <td className="px-5 py-4 text-sm text-slate-600">{item.teacherName}</td>
+                      <td className="px-5 py-4 text-sm text-slate-600">{formatTanggalPengajuan(item.tanggal.slice(0, 10))}</td>
+                      <td className="px-5 py-4">
+                        <StatusPill status={item.status} />
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+
+        <Card className="p-6 space-y-4">
+          <div>
+            <h2 className="text-base font-semibold text-slate-800">Status Konsul</h2>
+            <p className="text-sm text-slate-400">Ringkasan pending, disetujui, dan ditolak dari akun ini.</p>
+          </div>
+
+          <div className="overflow-hidden rounded-2xl border border-slate-100">
+            <table className="min-w-full text-sm">
+              <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <tr>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3 text-right">Jumlah</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {[
+                  { label: 'Pending', value: consultCounts.pending, tone: 'text-amber-600 bg-amber-50 ring-amber-200' },
+                  { label: 'Disetujui', value: consultCounts.approved, tone: 'text-emerald-600 bg-emerald-50 ring-emerald-200' },
+                  { label: 'Ditolak', value: consultCounts.rejected, tone: 'text-rose-600 bg-rose-50 ring-rose-200' },
+                ].map((row) => (
+                  <tr key={row.label}>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${row.tone}`}>{row.label}</span>
+                    </td>
+                    <td className="px-4 py-3 text-right font-semibold text-slate-700">{row.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4">
+            <p className="text-xs font-bold uppercase tracking-wide text-slate-400">Status Terbaru</p>
+            <p className="mt-1 text-sm font-semibold text-slate-800">{studentConsultations[0] ? getConsultStatusLabel(studentConsultations[0].status) : 'Belum ada konsultasi'}</p>
+            <p className="mt-2 text-sm text-slate-500">{studentConsultations[0] ? studentConsultations[0].service : 'Kirim konsul dari form di atas untuk melihat status.'}</p>
           </div>
         </Card>
       </div>

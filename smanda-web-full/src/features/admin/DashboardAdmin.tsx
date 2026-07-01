@@ -1,6 +1,7 @@
 import { GraduationCap, CheckCircle2, AlertCircle, TrendingUp } from 'lucide-react';
 import { Card, StatCard } from '../../components/ui';
-import { pendingConsults, attendanceToday, grades } from '../../data/mock';
+import { attendanceToday, grades } from '../../data/mock';
+import { getConsultStatusCounts, loadConsultations } from '../../data/consultationStore';
 import { useStudents } from '../../hooks/useStudents';
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'];
@@ -9,6 +10,8 @@ const trend = [72, 75, 78, 76, 80, 82];
 export default function DashboardAdmin() {
   const { students } = useStudents();
   const schoolAvg = Math.round((grades.reduce((sum, g) => sum + g.nilai, 0) / grades.length) * 10) / 10;
+  const consults = loadConsultations();
+  const consultCounts = getConsultStatusCounts(consults);
 
   return (
     <div className="space-y-6">
@@ -16,7 +19,7 @@ export default function DashboardAdmin() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard icon={GraduationCap} label="Siswa Aktif" value={String(students.length)} tone="purple" />
         <StatCard icon={CheckCircle2} label="Absensi Hari Ini" value={`${attendanceToday.pct}%`} hint={`${attendanceToday.present.length} hadir`} tone="emerald" />
-        <StatCard icon={AlertCircle} label="Konsul Pending" value={String(pendingConsults)} hint="Perlu ditinjau" tone="amber" />
+        <StatCard icon={AlertCircle} label="Konsul Pending" value={String(consultCounts.pending)} hint="Perlu ditinjau" tone="amber" />
         <StatCard icon={TrendingUp} label="Rata Nilai Sekolah" value={String(schoolAvg)} tone="sky" />
       </div>
       <Card className="p-6">

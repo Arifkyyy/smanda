@@ -1,7 +1,8 @@
 import { BookOpen, CheckCircle2, Clock3, GraduationCap, Mail, MapPin, TrendingUp, UserRound } from 'lucide-react';
 import { Card, StatCard, StatusPill } from '../../components/ui';
-import { consultations, attendances } from '../../data/mock';
+import { attendances } from '../../data/mock';
 import { createRows, gradeBookKey, loadGradeBook, type GradeLevel, type Semester } from '../../data/gradebook';
+import { getConsultStatusLabel, loadConsultations } from '../../data/consultationStore';
 import { useStudents } from '../../hooks/useStudents';
 
 export default function DashboardSiswa() {
@@ -13,6 +14,7 @@ export default function DashboardSiswa() {
   const gradeBook = loadGradeBook();
   const activeGrades = gradeBook[activeKey] ?? createRows(activeLevel, activeSemester);
   const topGrades = [...activeGrades].sort((a, b) => b.nilai - a.nilai).slice(0, 4);
+  const consultations = loadConsultations();
   const latestConsult = consultations.filter((consult) => consult.studentId === currentStudent.id).sort((a, b) => b.tanggal.localeCompare(a.tanggal))[0];
   const latestAttendance = attendances.filter((attendance) => attendance.studentId === currentStudent.id).sort((a, b) => b.waktu.localeCompare(a.waktu))[0];
 
@@ -23,8 +25,6 @@ export default function DashboardSiswa() {
         month: 'short',
       })
     : 'Belum ada data';
-
-  const consultLabel = latestConsult ? new Date(latestConsult.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Belum ada jadwal';
 
   const average = activeGrades.length ? Math.round((activeGrades.reduce((sum, grade) => sum + grade.nilai, 0) / activeGrades.length) * 10) / 10 : 0;
   const gradeCompletion = activeGrades.length ? Math.round((activeGrades.filter((grade) => grade.status === 'Complete').length / activeGrades.length) * 100) : 0;
@@ -75,7 +75,7 @@ export default function DashboardSiswa() {
             <div className="mt-6 grid gap-4 sm:grid-cols-3">
               <StatCard icon={TrendingUp} label={`Rata-rata Kelas ${activeLevel}${activeRombel}`} value={String(average)} hint={`Semester ${activeSemester}`} tone="purple" />
               <StatCard icon={CheckCircle2} label="Nilai Tervalidasi" value={`${gradeCompletion}%`} hint={`${activeGrades.length} mapel aktif`} tone="emerald" />
-              <StatCard icon={Clock3} label="Konsul Terdekat" value={consultLabel} hint={latestConsult ? latestConsult.service : 'Belum ada jadwal'} tone="amber" />
+              <StatCard icon={Clock3} label="Status Konsul" value={latestConsult ? getConsultStatusLabel(latestConsult.status) : 'Belum ada'} hint={latestConsult ? latestConsult.service : 'Belum ada jadwal'} tone="amber" />
             </div>
           </div>
         </Card>
@@ -103,6 +103,9 @@ export default function DashboardSiswa() {
           <div className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4">
             <p className="text-xs font-bold uppercase tracking-wide text-slate-400">Konsultasi Terakhir</p>
             <p className="mt-1 text-sm font-semibold text-slate-800">{latestConsult ? latestConsult.service : 'Belum ada pengajuan'}</p>
+            <div className="mt-2">
+              <StatusPill status={latestConsult ? latestConsult.status : 'Menunggu'} />
+            </div>
             <p className="mt-2 text-sm text-slate-500">{latestConsult ? latestConsult.catatan : 'Silakan buat pengajuan konsul dari menu Input Konsul.'}</p>
           </div>
 
