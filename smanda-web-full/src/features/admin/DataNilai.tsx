@@ -6,6 +6,20 @@ import { grades } from '../../data/mock';
 const classLevels = ['Semua', 'X', 'XI', 'XII'] as const;
 const semesterLevels = ['Semua', '1', '2'] as const;
 
+const classBadgeStyles: Record<(typeof classLevels)[number], string> = {
+  Semua: 'bg-slate-100 text-slate-700 ring-slate-200',
+  X: 'bg-blue-50 text-blue-700 ring-blue-200',
+  XI: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+  XII: 'bg-amber-50 text-amber-700 ring-amber-200',
+};
+
+function getClassLabel(level: (typeof classLevels)[number]) {
+  if (level === 'X') return 'Kelas 10';
+  if (level === 'XI') return 'Kelas 11';
+  if (level === 'XII') return 'Kelas 12';
+  return 'Semua';
+}
+
 function getClassLevel(kelas: string) {
   if (kelas.startsWith('XII')) return 'XII';
   if (kelas.startsWith('XI')) return 'XI';
@@ -46,7 +60,7 @@ export default function DataNilai() {
     count: level === 'Semua' ? grades.length : grades.filter((g) => getSemesterLevel(g.semester) === level).length,
   }));
 
-  const selectedSummary = `${classFilter === 'Semua' ? 'Semua kelas' : `Kelas ${classFilter}`} • ${semesterFilter === 'Semua' ? 'Semua semester' : `Semester ${semesterFilter}`}`;
+  const selectedSummary = `${classFilter === 'Semua' ? 'Semua kelas' : getClassLabel(classFilter)} • ${semesterFilter === 'Semua' ? 'Semua semester' : `Semester ${semesterFilter}`}`;
 
   return (
     <div className="space-y-5">
@@ -61,17 +75,28 @@ export default function DataNilai() {
               <p className="text-xs text-slate-400">X / XI / XII</p>
             </div>
             <div className="flex flex-wrap gap-2">
-              {classCounts.map(({ level, count }) => (
-                <button
-                  key={level}
-                  onClick={() => setClassFilter(level)}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                    classFilter === level ? 'bg-gradient-to-r from-violet-700 to-purple-600 text-white shadow-md shadow-violet-700/20' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
-                  }`}
-                >
-                  {level === 'Semua' ? 'Semua' : `Kelas ${level}`} <span className="ml-1 text-xs opacity-80">({count})</span>
-                </button>
-              ))}
+              {classCounts.map(({ level, count }) => {
+                const isActive = classFilter === level;
+                const baseStyle = classBadgeStyles[level];
+
+                return (
+                  <button
+                    key={level}
+                    onClick={() => setClassFilter(level)}
+                    className={`rounded-2xl px-4 py-2.5 text-sm font-semibold ring-1 transition ${
+                      isActive
+                        ? 'bg-gradient-to-r from-violet-700 to-purple-600 text-white shadow-md shadow-violet-700/20 ring-transparent'
+                        : `${baseStyle} hover:bg-slate-100`
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="text-[11px] uppercase tracking-[0.2em] opacity-70">{level === 'Semua' ? 'All' : level}</span>
+                      <span>{getClassLabel(level)}</span>
+                      <span className="ml-1 rounded-full bg-white/70 px-2 py-0.5 text-[11px] font-semibold text-current">{count}</span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </Card>
 
